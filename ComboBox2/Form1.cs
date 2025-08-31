@@ -1,0 +1,55 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Data.SqlClient;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace ComboBox2
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+        SqlConnection Conn = new SqlConnection("Data Source = system-NAme; Initial Catalog =Person; Integrated Security =True");
+        SqlCommand cmd;
+        SqlDataReader dr;
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            string sql = " SELECT * FROM customers";
+            cmd = new SqlCommand(sql, Conn);
+            Conn.Open();
+            dr = cmd.ExecuteReader();
+            while (dr.Read())
+            {
+                comboBox1.Items.Add(dr["CompanyName"]);
+            }
+            Conn.Close();
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            cmd = new SqlCommand("SELECT * FROM Customers WHERE CompanyName=@companyName", Conn);
+            cmd.Parameters.AddWithValue("@companyName", comboBox1.Text);
+            Conn.Open();
+            dr = cmd.ExecuteReader();
+            while (dr.Read())
+            {
+                string contactName = dr["ContactName"].ToString();
+                string address = dr["CusAddress"].ToString();
+                string phone = dr["Phone"].ToString();
+
+                txtAdress.Text = address;
+                txtContact.Text = contactName;
+                txtPhone.Text = phone;
+            }
+            Conn.Close();
+        }
+    }
+}
